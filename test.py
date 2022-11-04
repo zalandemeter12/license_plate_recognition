@@ -18,9 +18,9 @@ ocr = paddleocr.PaddleOCR(use_angle_cls=True, lang='en', use_gpu=True, show_log 
 
 
 for z in range(1, 11):
-	img = cv2.imread('license_plate_' + str(z) + '.jpg')
+	img = cv2.imread(' license_plate_' + str(z) + '.jpg')
 
-	img   = imutils.resize(img, height = RESIZE_HEIGHT)
+	img  = imutils.resize(img, height = RESIZE_HEIGHT)
 
 	img_orig = img.copy()
 
@@ -74,8 +74,10 @@ for z in range(1, 11):
 		if len(result) < 1:
 			continue
 		for line in result:
-			data_cand = line[1][0]
-			conf_cand = line[1][1]
+			if len(line) < 1:
+				continue
+			data_cand = line[0][1][0]
+			conf_cand = line[0][1][1]
 			data = data_cand + data
 			conf += conf_cand
 		conf = conf/len(result)
