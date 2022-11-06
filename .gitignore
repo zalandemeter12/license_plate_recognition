@@ -2,7 +2,7 @@ data/license_plate_images/
 data/high_res_images/
 data/low_res_images/
 data/background_images/
-data/positive_images/
+
 data/synthesized_images/
 data/synthetic_red_plates/
 data/old_hu_license_plates/
