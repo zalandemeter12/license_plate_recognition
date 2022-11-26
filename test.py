@@ -82,13 +82,32 @@ for idx, original_filename in enumerate(image_list):
 			#gray = cv2.equalizeHist(gray)
 
 			roi = gray[y:y+h, x:x+w]
-			
+			# get roi size
+			roi_height, roi_width = roi.shape
+
+			scale = 100 / roi_height
+			roi = cv2.resize(roi,dsize=(0,0), fx=scale, fy=scale, interpolation=cv2.INTER_CUBIC)
 			enhancer = ImageEnhance.Contrast(Image.fromarray(roi))
 			roi = enhancer.enhance(10)
 
-			
-
 			roi = np.array(roi)
+
+			#cv2.imshow('img', roi)
+			#pressed = cv2.waitKey(0)
+			
+			kernel = np.ones((3, 3), np.uint8)
+  
+            # Using cv2.erode() method 
+			roi = cv2.erode(roi, kernel)
+
+			#dilation
+			kernel = np.ones((3, 3), np.uint8)
+			roi = cv2.dilate(roi, kernel, iterations=1)
+
+			#cv2.imshow('img', roi)
+			#pressed = cv2.waitKey(0)	
+						
+			roi = cv2.resize(roi,(roi_width, roi_height))
 
 			thresh = cv2.threshold(roi, 253, 255, cv2.THRESH_BINARY)[1]			
 			contours = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
@@ -164,7 +183,7 @@ for idx, original_filename in enumerate(image_list):
 
 
 	#print(plate_options)
-	'''
+	
 	all_detections = idx + 1
 	for option in plate_options:
 		real_plate = original_filename.split(".")[0].replace("-", "").replace(" ", "").lower()
@@ -176,9 +195,9 @@ for idx, original_filename in enumerate(image_list):
 		print(idx, " ------ ", "Accuracy: ", correct_detections / all_detections * 100, "%")
 		print("Correct detections: ", correct_detections)
 		print("All detections: ", all_detections)
-	'''
-
 	
+
+	'''
 	#show img and img_orig side by side concatenated
 	img  = imutils.resize(img, height = RESIZE_HEIGHT)
 	cv2.imshow('img', img)
@@ -186,14 +205,16 @@ for idx, original_filename in enumerate(image_list):
 	
 	if pressed == ord('q'):
 		break
-    
+    '''
 
 # copy missed images to a new folder
 #split string by / and take the last element
 print("Average time: ", sum(times)/len(times))
+
+'''
 for filename in missed_images:
 	shutil.copyfile(filename, os.path.join("data/missed_images/", filename.split('/')[-1]))
-
+'''
 
 
 #print("Final Accuracy: ", correct_detections / all_detections * 100, "%")
