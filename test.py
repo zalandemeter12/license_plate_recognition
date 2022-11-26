@@ -48,7 +48,7 @@ model = torch.hub.load('ultralytics/yolov5', 'custom', path='models/best_m_240.p
 model.eval()
 
 # Initiate OCR
-ocr = paddleocr.PaddleOCR(use_angle_cls=True, lang='en', use_gpu=True, show_log = False, max_batch_size = 20, total_process_num = 12, use_mp=True) # need to run only once to download and load model into memory
+#ocr = paddleocr.PaddleOCR(use_angle_cls=True, lang='en', use_gpu=True, show_log = False, max_batch_size = 20, total_process_num = 12, use_mp=True) # need to run only once to download and load model into memory
 
 image_list = os.listdir("data/high_res_images")
 random.shuffle(image_list)
