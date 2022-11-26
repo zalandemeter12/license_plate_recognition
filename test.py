@@ -2,12 +2,38 @@ import numpy as np
 import cv2
 import imutils
 from PIL import Image, ImageEnhance
-import paddleocr
+#import paddleocr
 import os
 import random
 import torch
 import shutil
 import time
+
+def detect_text(roi):
+    """Detects text in the file."""
+    from google.cloud import vision
+    import io
+    client = vision.ImageAnnotatorClient()
+
+    image = vision.Image(content=roi)
+
+    response = client.text_detection(image=image)
+    texts = response.text_annotations
+    print('Texts:')
+
+    for text in texts:
+        print('\n"{}"'.format(text.description))
+
+        vertices = (['({},{})'.format(vertex.x, vertex.y)
+                    for vertex in text.bounding_poly.vertices])
+
+        print('bounds: {}'.format(','.join(vertices)))
+
+    if response.error.message:
+        raise Exception(
+            '{}\nFor more info on error messages, check: '
+            'https://cloud.google.com/apis/design/errors'.format(
+                response.error.message))
 
 def has_numbers(inputString):
     return any(char.isdigit() for char in inputString)
@@ -135,7 +161,8 @@ for idx, original_filename in enumerate(image_list):
 
 			data = ""
 			conf = 0
-			result = ocr.ocr(roi, cls=True)
+			#result = ocr.ocr(roi, cls=True)
+			result = detect_text(roi)
 			if len(result) < 1:
 				continue
 			for line in result:
@@ -219,4 +246,3 @@ for filename in missed_images:
 
 #print("Final Accuracy: ", correct_detections / all_detections * 100, "%")
 
-	
