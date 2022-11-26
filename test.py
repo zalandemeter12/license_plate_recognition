@@ -197,7 +197,7 @@ for idx, original_filename in enumerate(image_list):
 		print("All detections: ", all_detections)
 	
 
-	'''
+	
 	#show img and img_orig side by side concatenated
 	img  = imutils.resize(img, height = RESIZE_HEIGHT)
 	cv2.imshow('img', img)
@@ -205,7 +205,7 @@ for idx, original_filename in enumerate(image_list):
 	
 	if pressed == ord('q'):
 		break
-    '''
+    
 
 # copy missed images to a new folder
 #split string by / and take the last element
