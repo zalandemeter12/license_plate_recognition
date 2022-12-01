@@ -2,38 +2,13 @@ import numpy as np
 import cv2
 import imutils
 from PIL import Image, ImageEnhance
-#import paddleocr
+import paddleocr
 import os
 import random
 import torch
 import shutil
 import time
 
-def detect_text(roi):
-    """Detects text in the file."""
-    from google.cloud import vision
-    import io
-    client = vision.ImageAnnotatorClient()
-
-    image = vision.Image(content=roi)
-
-    response = client.text_detection(image=image)
-    texts = response.text_annotations
-    print('Texts:')
-
-    for text in texts:
-        print('\n"{}"'.format(text.description))
-
-        vertices = (['({},{})'.format(vertex.x, vertex.y)
-                    for vertex in text.bounding_poly.vertices])
-
-        print('bounds: {}'.format(','.join(vertices)))
-
-    if response.error.message:
-        raise Exception(
-            '{}\nFor more info on error messages, check: '
-            'https://cloud.google.com/apis/design/errors'.format(
-                response.error.message))
 
 def has_numbers(inputString):
     return any(char.isdigit() for char in inputString)
@@ -161,17 +136,19 @@ for idx, original_filename in enumerate(image_list):
 
 			data = ""
 			conf = 0
-			#result = ocr.ocr(roi, cls=True)
-			result = detect_text(roi)
+			result = ocr.ocr(roi, cls=True)
+			
 			if len(result) < 1:
 				continue
 			for line in result:
 				if len(line) < 1:
 					continue
-				data_cand = line[0][1][0]
-				conf_cand = line[0][1][1]
-				data = data_cand + data
-				conf += conf_cand
+				for l in line:					
+					data_cand = l[1][0]
+					conf_cand = l[1][1]
+					data = data + data_cand
+					conf += conf_cand
+				print(data)
 			conf = conf/len(result)
 				
 			data = data.replace(" ", "")
@@ -224,7 +201,7 @@ for idx, original_filename in enumerate(image_list):
 		print("All detections: ", all_detections)
 	
 
-	
+	'''
 	#show img and img_orig side by side concatenated
 	img  = imutils.resize(img, height = RESIZE_HEIGHT)
 	cv2.imshow('img', img)
@@ -232,7 +209,7 @@ for idx, original_filename in enumerate(image_list):
 	
 	if pressed == ord('q'):
 		break
-    
+    '''
 
 # copy missed images to a new folder
 #split string by / and take the last element
