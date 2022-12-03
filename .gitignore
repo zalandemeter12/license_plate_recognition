@@ -7,3 +7,4 @@ data/synthetic_red_plates/
 data/old_hu_license_plates/
 data/hu_license_plate_images/
 high_res_images/
+*/*.jpg

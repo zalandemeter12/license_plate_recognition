@@ -23,9 +23,9 @@ model = torch.hub.load('ultralytics/yolov5', 'custom', path='models/best_m_240.p
 model.eval()
 
 # Initiate OCR
-#ocr = paddleocr.PaddleOCR(use_angle_cls=True, lang='en', use_gpu=True, show_log = False, max_batch_size = 20, total_process_num = 12, use_mp=True) # need to run only once to download and load model into memory
-
-image_list = os.listdir("data/high_res_images")
+ocr = paddleocr.PaddleOCR(use_angle_cls=True, lang='en', use_gpu=True, show_log = False, max_batch_size = 20, total_process_num = 12, use_mp=True) # need to run only once to download and load model into memory
+image_dir = r'high_res_images/'
+image_list = os.listdir(image_dir)
 random.shuffle(image_list)
 #for z in range(1, 11):
 correct_detections = 0
@@ -34,7 +34,7 @@ times = []
 for idx, original_filename in enumerate(image_list):
 	tic = time.perf_counter()
 	#print(original_filename)
-	filename = "data/high_res_images/" + original_filename
+	filename = image_dir + original_filename
 	#img = cv2.imread('license_plate_' + str(z) + '.jpg')
 	img = cv2.imread(filename)
 
@@ -136,6 +136,7 @@ for idx, original_filename in enumerate(image_list):
 
 			data = ""
 			conf = 0
+
 			result = ocr.ocr(roi, cls=True)
 			
 			if len(result) < 1:
@@ -148,7 +149,7 @@ for idx, original_filename in enumerate(image_list):
 					conf_cand = l[1][1]
 					data = data + data_cand
 					conf += conf_cand
-				print(data)
+				#print(data)
 			conf = conf/len(result)
 				
 			data = data.replace(" ", "")
@@ -172,7 +173,7 @@ for idx, original_filename in enumerate(image_list):
 			if len(data) > 5 and len(data) < 10:
 				if conf > CONF_THRESH:
 					count += 1
-					print(count,'. valid: ',data)
+					#print(count,'. valid: ',data)
 					plate_options.append(data)
 					img[y:y+h, x:x+w] = cv2.cvtColor(roi, cv2.COLOR_GRAY2BGR)
 					cv2.rectangle(img,(x,y),(x+w,y+h),(0,255,0),2)
@@ -181,18 +182,26 @@ for idx, original_filename in enumerate(image_list):
 						plate_found = True
 	toc = time.perf_counter()
 	times.append(toc-tic)
-	print("Time elapsed: ", toc-tic)
+	#print("Time elapsed: ", toc-tic)
 	if not plate_found:
 		missed_images.append(filename)
 
 
 	#print(plate_options)
 	
+	import re
+	regex_normal = re.compile(r'([A-Z]{3}[0-9]{3})')
+	regex_new = re.compile(r'([A-Z]{4}[0-9]{3})') 
+	regex_all = re.compile(r'//[epvz][\d]{5}$|[a-zA-Z]{3}[\d]{3}$|[a-zA-Z]{4}[\d]{2}$|[a-zA-Z]{5}[\d]{1}$|[mM][\d]{2}[\d]{4}$|(ck|dt|hc|cd|hx|ma|ot|rx|rr|CK|DT|HC|CD|HX|MA|OT|RX|RR)[\d]{2}[\d]{2}$|(c-x|x-a|x-b|x-c|C-X|X-A|X-B|X-C)[\d]{4}$')
 	all_detections = idx + 1
 	for option in plate_options:
 		real_plate = original_filename.split(".")[0].replace("-", "").replace(" ", "").lower()
-		if(real_plate in option.lower()):
-			correct_detections += 1
+		#if(real_plate in option.lower()):
+		if regex_all.search(option):
+			found = regex_all.search(option).group(0)
+			print(option + " real: " + real_plate + " regex found: " + found)
+			if(found.upper() == real_plate.upper()):
+				correct_detections += 1
 			break
 	
 	if(idx % 10 == 0):
@@ -215,10 +224,10 @@ for idx, original_filename in enumerate(image_list):
 #split string by / and take the last element
 print("Average time: ", sum(times)/len(times))
 
-'''
+''''''
 for filename in missed_images:
 	shutil.copyfile(filename, os.path.join("data/missed_images/", filename.split('/')[-1]))
-'''
+
 
 
 #print("Final Accuracy: ", correct_detections / all_detections * 100, "%")
