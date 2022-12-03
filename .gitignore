@@ -6,5 +6,9 @@ data/synthesized_images/
 data/synthetic_red_plates/
 data/old_hu_license_plates/
 data/hu_license_plate_images/
+data/missed_images/
+data/labels/
+data/images/
+data/
 high_res_images/
 */*.jpg

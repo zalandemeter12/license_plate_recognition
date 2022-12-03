@@ -5,6 +5,8 @@ from tkinter import filedialog
 import os
 import numpy as np
 from get_license_plate import get_license_plate
+from PlateReader import PlateReader
+import cv2
 
 
 class UI(object):
@@ -44,13 +46,23 @@ class UI(object):
 
     def process_img(self):
         print(self.filename)
-        res = get_license_plate(self.filename)
+        img = cv2.imread(self.filename)
+        res = self.reader.read(img, return_img=True)
 
-        self.label_license.config(text=res["plate_options"])
-        self.display_img(Image.fromarray(np.uint8(res["image"])).convert('RGB'))
+        res_img = res["image"]
+        res_img = cv2.cvtColor(img, cv2.COLOR_BGR2RGB)
+        
+
+        if len(res['plates']) > 0:
+            print(res['plates'])
+            self.label_license.config(text=';'.join(res['plates']))
+        else:
+            self.label_license.config(text="No license plate found")
+        
+        self.display_img(Image.fromarray(res_img, mode="RGB"))
 
     def __init__(self):
-
+        self.reader = PlateReader()
         label_license = tk.Label(master=self.frame_a, text="")
         label_license.pack()
         label_a = tk.Button(master=self.frame_a, command=self.open_img, text="Load image")
