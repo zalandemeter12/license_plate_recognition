@@ -12,10 +12,10 @@ from tqdm.contrib import tenumerate
 def main(argv):
     inputdir = ''
     outputfile = ''
-
-    user_manual = 'evaluate_solution.py -i <inputdir> (optional) -o <outputfile>'
+    device_type = 'cpu'
+    user_manual = 'evaluate_solution.py -i <inputdir> (optional) -o <outputfile> -d <device_type> [\'cpu\', \'gpu\']'
     try:
-        opts, args = getopt.getopt(argv,"hi:o:",["idir=","ofile="])
+        opts, args = getopt.getopt(argv,"hi:o:d:",["idir=","ofile=", "device_type="])
     except getopt.GetoptError:
         print(user_manual)
         sys.exit(2)
@@ -27,6 +27,8 @@ def main(argv):
             inputdir = arg
         elif opt in ("-o", "--ofile"):
             outputfile = arg
+        elif opt in ("-d", "--devicetype"):
+            device_type = arg
     
     if inputdir == '':
         print(user_manual)
@@ -36,10 +38,14 @@ def main(argv):
         print('Input directory does not exist.')
         sys.exit(2)
 
+    if not (device_type in ['cpu', 'gpu', 'cuda']):
+        print('Invalid device type.')
+        sys.exit(2)
+
     print('Input directory is ', inputdir)
     
     print('Initializing PlateReader...')
-    plate_reader = PlateReader()
+    plate_reader = PlateReader(device_type=device_type)
 
     # create dataframe to store results with filename, plates
     df = pd.DataFrame(columns=['filename', 'plates'])

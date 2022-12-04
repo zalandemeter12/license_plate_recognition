@@ -13,11 +13,11 @@ class PlateReader:
 	CONF_THRESH = 0.5
 
 
-	def __init__(self) -> None:
-		device_type = 'cpu'
-		if torch.cuda.is_available():
+	def __init__(self, device_type='cpu') -> None:		
+		if device_type == 'gpu':
 			device_type = 'cuda'
-		self.plate_detector = torch.hub.load('ultralytics/yolov5', 'custom', path='models/best_s_200.pt', device=device_type)
+		print("Using device: " + device_type)
+		self.plate_detector = torch.hub.load('ultralytics/yolov5', 'custom', path='models/best_s_250_final.pt', device=device_type)
 		self.plate_detector.eval()
 
 		self.reader = paddleocr.PaddleOCR(use_angle_cls=True, lang='en', use_gpu=True, show_log = False, max_batch_size = 20, total_process_num = 12, use_mp=True)
@@ -39,32 +39,7 @@ class PlateReader:
 
 			roi = gray[y:y+h, x:x+w]
 
-			roi = self.preprocess_plate(roi)
-
-			thresh = cv2.threshold(roi, 253, 255, cv2.THRESH_BINARY)[1]			
-			contours = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
-			
-			contours = contours[0] if len(contours) == 2 else contours[1]
-
-			'''
-			# hide unimportant parts
-			biggest_area = 0
-			biggest_contour = 0
-			for c in contours:
-				area = cv2.contourArea(c)
-				if area > biggest_area:
-					biggest_area = area
-					biggest_contour = c
-			try:
-				xx,yy,ww,hh = cv2.boundingRect(biggest_contour)
-				#iterate over the roi and set to black all the pixels that are not in the bounding rectangle
-				for i in range(0, roi.shape[0]):
-					for j in range(0, roi.shape[1]):
-						if i < yy or i > yy+hh or j < xx or j > xx+ww:
-							roi[i][j] = 0
-			except:
-				continue
-			'''
+			roi = self.preprocess_plate(roi)			
 
 			data = ""
 			conf = 0

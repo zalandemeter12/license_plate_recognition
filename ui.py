@@ -4,7 +4,6 @@ from PIL import ImageTk, Image
 from tkinter import filedialog
 import os
 import numpy as np
-from get_license_plate import get_license_plate
 from PlateReader import PlateReader
 import cv2
 

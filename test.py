@@ -19,7 +19,7 @@ CONF_THRESH = 0.5
 
 # Initiate cascade classifer.
 #plate_cascade = cv2.CascadeClassifier(CASCADE_PATH)
-model = torch.hub.load('ultralytics/yolov5', 'custom', path='models/best_s_200.pt', device='cpu')  
+model = torch.hub.load('ultralytics/yolov5', 'custom', path='models/best_n_200_low.pt', device='cpu')  
 model.eval()
 
 # Initiate OCR
@@ -108,12 +108,12 @@ for idx, original_filename in enumerate(image_list):
 			#pressed = cv2.waitKey(0)	
 						
 			roi = cv2.resize(roi,(roi_width, roi_height))
-
+			'''
 			thresh = cv2.threshold(roi, 253, 255, cv2.THRESH_BINARY)[1]			
 			contours = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 			
 			contours = contours[0] if len(contours) == 2 else contours[1]
-			'''
+			
 			biggest_area = 0
 			biggest_contour = 0
 			for c in contours:
