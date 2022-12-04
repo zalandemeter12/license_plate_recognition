@@ -19,14 +19,14 @@ CONF_THRESH = 0.5
 
 # Initiate cascade classifer.
 #plate_cascade = cv2.CascadeClassifier(CASCADE_PATH)
-model = torch.hub.load('ultralytics/yolov5', 'custom', path='models/best_m_240.pt', device='cpu')  
+model = torch.hub.load('ultralytics/yolov5', 'custom', path='models/best_s_200.pt', device='cpu')  
 model.eval()
 
 # Initiate OCR
 ocr = paddleocr.PaddleOCR(use_angle_cls=True, lang='en', use_gpu=True, show_log = False, max_batch_size = 20, total_process_num = 12, use_mp=True) # need to run only once to download and load model into memory
-image_dir = r'high_res_images/'
+image_dir = r'data/high_res_images/'
 image_list = os.listdir(image_dir)
-random.shuffle(image_list)
+#random.shuffle(image_list)
 #for z in range(1, 11):
 correct_detections = 0
 missed_images = []
@@ -36,8 +36,7 @@ for idx, original_filename in enumerate(image_list):
 	#print(original_filename)
 	filename = image_dir + original_filename
 	#img = cv2.imread('license_plate_' + str(z) + '.jpg')
-	img = cv2.imread(filename)
-
+	img = cv2.imread(filename)	
 	#img  = imutils.resize(img, height = RESIZE_HEIGHT)
 
 	#img_orig = img.copy()
@@ -114,7 +113,7 @@ for idx, original_filename in enumerate(image_list):
 			contours = cv2.findContours(thresh, cv2.RETR_TREE, cv2.CHAIN_APPROX_SIMPLE)
 			
 			contours = contours[0] if len(contours) == 2 else contours[1]
-
+			'''
 			biggest_area = 0
 			biggest_contour = 0
 			for c in contours:
@@ -131,7 +130,7 @@ for idx, original_filename in enumerate(image_list):
 							roi[i][j] = 0
 			except:
 				continue
-
+			'''
 
 
 			data = ""

@@ -46,6 +46,7 @@ class PlateReader:
 			
 			contours = contours[0] if len(contours) == 2 else contours[1]
 
+			'''
 			# hide unimportant parts
 			biggest_area = 0
 			biggest_contour = 0
@@ -63,7 +64,7 @@ class PlateReader:
 							roi[i][j] = 0
 			except:
 				continue
-
+			'''
 
 			data = ""
 			conf = 0

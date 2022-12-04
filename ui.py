@@ -14,6 +14,7 @@ class UI(object):
     window.resizable(width=True, height=True)
     filename = ''
     frame = tk.Frame(master=window, width=550, height=250)
+    window.title("License Plate Recognition")
     frame.pack()
     frame_a = tk.Frame()
     label_license = tk.Label(master=frame_a, text="")
