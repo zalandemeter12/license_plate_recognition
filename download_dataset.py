@@ -2,7 +2,7 @@ import pandas as pd
 from urllib import request, error
 import urllib.request
 import os
-
+from tqdm import tqdm
 # read csv file
 df = pd.read_csv('KF_HF_database.csv', sep=';', header=None)
 
@@ -27,7 +27,7 @@ opener.addheaders = [('User-agent', 'Mozilla/5.0'), ('Accept', 'text/html,applic
 urllib.request.install_opener(opener)
 
 #iterate over rows with iterrows()
-for index, row in df.iterrows():
+for index, row in tqdm(df.iterrows(), total=df.shape[0]):
     # download the file from the url 4. column
     url = row[read_column]
     # save the file under the name of the 1. column
